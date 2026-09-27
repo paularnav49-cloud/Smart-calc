@@ -17,9 +17,9 @@ android {
         applicationId "com.arnavpaul.smartcalc"
         minSdk 24
         targetSdk 34
-        versionCode 1
-        versionName "1.0"
-        buildConfigField "String", "GROQ_API_KEY", "\"\${localProps.getProperty('groqApiKey', '')}\""
+        versionCode 2
+        versionName "1.1"
+        buildConfigField "String", "GROQ_API_KEY", "\"" + localProps.getProperty("groqApiKey", "") + "\""
     }
 
     buildTypes {
