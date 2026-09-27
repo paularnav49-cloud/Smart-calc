@@ -22,11 +22,11 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_currency -> swap(CurrencyFragment())
                 R.id.nav_unit -> swap(UnitFragment())
                 R.id.nav_hcf -> swap(HcfLcmFragment())
-                R.id.nav_voice -> swap(VoiceFragment())
             }
             true
         }
 
+        findViewById<TextView>(R.id.btn_voice).setOnClickListener { swap(VoiceFragment()) }
         findViewById<TextView>(R.id.btn_chat).setOnClickListener {
             startActivity(Intent(this, ChatActivity::class.java))
         }

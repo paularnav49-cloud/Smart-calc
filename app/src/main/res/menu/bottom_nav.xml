@@ -4,5 +4,4 @@
     <item android:id="@+id/nav_currency" android:icon="@drawable/ic_currency" android:title="Currency" />
     <item android:id="@+id/nav_unit" android:icon="@drawable/ic_unit" android:title="Units" />
     <item android:id="@+id/nav_hcf" android:icon="@drawable/ic_hcf" android:title="HCF/LCM" />
-    <item android:id="@+id/nav_voice" android:icon="@drawable/ic_mic" android:title="Voice" />
 </menu>
