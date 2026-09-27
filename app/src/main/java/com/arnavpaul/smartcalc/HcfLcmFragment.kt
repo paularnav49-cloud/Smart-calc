@@ -33,7 +33,7 @@ class HcfLcmFragment : Fragment() {
 
     private fun compute(hcf: Boolean) {
         val raw = view?.findViewById<EditText>(R.id.hcf_input)?.text?.toString().orEmpty()
-        val nums = raw.split(Regex("[,\s]+"))
+        val nums = raw.split(",", " ", "\n")
             .filter { it.isNotEmpty() }
             .mapNotNull { it.toLongOrNull() }
         if (nums.size < 2) {

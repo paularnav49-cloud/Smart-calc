@@ -4,10 +4,13 @@ object Evaluator {
 
     private val OPS = mapOf('+' to 1, '-' to 1, '*' to 2, '/' to 2, '%' to 2)
 
+    private val CLEAN = Regex("[^0-9+*/%.() -]")
+    private val SPACES = Regex("[ ]+")
+
     fun eval(raw: String): Double {
         var s = raw.replace("×", "*").replace("÷", "/").replace("−", "-")
-        s = s.replace(Regex("[^0-9+\-*/%.() ]"), "")
-        s = s.replace(Regex("\\s+"), "")
+        s = s.replace(CLEAN, "")
+        s = s.replace(SPACES, "")
         if (s.isEmpty()) return 0.0
         if (s.startsWith("-")) s = "0" + s
         s = s.replace("(-", "(0-")
