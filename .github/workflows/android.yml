@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,5 +32,20 @@ jobs:
 
       - name: Build debug APK
         run: gradle assembleDebug --no-daemon --stacktrace
-        env:
-          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+
+      - name: Rename APK
+        run: mv app/build/outputs/apk/debug/app-debug.apk SmartCalc.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SmartCalc-debug-apk
+          path: SmartCalc.apk
+
+      - name: Create release with APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: SmartCalc build ${{ github.run_number }}
+          files: SmartCalc.apk
+          make_latest: true
