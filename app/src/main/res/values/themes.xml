@@ -1,0 +1,5 @@
+<resources>
+    <style name="Theme.SmartCalc" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@color/primary</item>
+    </style>
+</resources>

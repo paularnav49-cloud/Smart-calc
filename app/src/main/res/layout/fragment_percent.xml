@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <Spinner
+        android:id="@+id/percent_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/percent_a"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="First number (X)"
+        android:inputType="numberDecimal|numberSigned" />
+
+    <EditText
+        android:id="@+id/percent_b"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Second number (Y)"
+        android:inputType="numberDecimal|numberSigned" />
+
+    <Button
+        android:id="@+id/percent_go"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Calculate" />
+
+    <TextView
+        android:id="@+id/percent_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:textSize="24sp" />
+</LinearLayout>
