@@ -31,6 +31,7 @@ jobs:
           printf 'groqApiKey=%s\n' "${{ secrets.GROQ_API_KEY }}" >> local.properties
           printf 'cfApiKey=%s\n' "${{ secrets.CLOUDFLARE_API_KEY }}" >> local.properties
           printf 'cfAccountId=%s\n' "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" >> local.properties
+          printf 'togetherApiKey=%s\n' "${{ secrets.TOGETHER_API_KEY }}" >> local.properties
 
       - name: Build debug APK
         run: |

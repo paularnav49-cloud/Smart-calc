@@ -17,12 +17,12 @@ android {
         applicationId "com.arnavpaul.smartcalc"
         minSdk 24
         targetSdk 34
-        versionCode 3
-        versionName "1.2"
-        // .trim() guards against trailing whitespace/newlines in secrets
+        versionCode 4
+        versionName "1.3"
         buildConfigField "String", "GROQ_API_KEY", "\"" + localProps.getProperty("groqApiKey", "").trim() + "\""
         buildConfigField "String", "CF_API_KEY", "\"" + localProps.getProperty("cfApiKey", "").trim() + "\""
         buildConfigField "String", "CF_ACCOUNT_ID", "\"" + localProps.getProperty("cfAccountId", "").trim() + "\""
+        buildConfigField "String", "TOGETHER_API_KEY", "\"" + localProps.getProperty("togetherApiKey", "").trim() + "\""
     }
 
     buildTypes {

@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,10 +50,8 @@ class ImageFragment : Fragment() {
 
         go.setOnClickListener {
             if (busy) return@setOnClickListener
-  
-
-          if (BuildConfig.CF_API_KEY.isEmpty() || BuildConfig.CF_ACCOUNT_ID.isEmpty()) {
-                error.text = "Cloudflare key is not configured in this build."
+            if (BuildConfig.TOGETHER_API_KEY.isEmpty()) {
+                error.text = "Together AI key is not configured in this build."
                 error.visibility = View.VISIBLE
                 return@setOnClickListener
             }
@@ -72,35 +71,36 @@ class ImageFragment : Fragment() {
                 var bmp: Bitmap? = null
                 var errText: String? = null
                 try {
-                    val url = "https://api.cloudflare.com/client/v4/accounts/" +
-                        BuildConfig.CF_ACCOUNT_ID +
-                        "/ai/run/@cf/black-forest-labs/flux-1-schnell"
-                    val conn = URL(url).openConnection() as HttpsURLConnection
+                    val conn = URL("https://api.together.xyz/v1/images/generations").openConnection() as HttpsURLConnection
                     conn.requestMethod = "POST"
-                    conn.setRequestProperty("Authorization", "Bearer " + BuildConfig.CF_API_KEY)
+                    conn.setRequestProperty("Authorization", "Bearer " + BuildConfig.TOGETHER_API_KEY)
                     conn.setRequestProperty("Content-Type", "application/json")
                     conn.connectTimeout = 30000
                     conn.readTimeout = 120000
                     conn.doOutput = true
-                    val body = JSONObject().put("prompt", prompt).toString()
+                    val body = JSONObject()
+                        .put("model", "black-forest-labs/FLUX.1-schnell-Free")
+                        .put("prompt", prompt)
+                        .put("width", 1024)
+                        .put("height", 1024)
+                        .put("steps", 4)
+                        .put("n", 1)
+                        .toString()
                     conn.outputStream.use { it.write(body.toByteArray()) }
 
                     val code = conn.responseCode
                     if (code in 200..299) {
-                        val bytes = conn.inputStream.use { it.readBytes() }
-                        if (bytes.size > 100 && bytes[0] == 0x89.toByte()) {
-                            bmp = BitmapFactory.decodeByteArray(bytes,
- 
-0, bytes.size)
-                        } else {
-                            errText = "Service returned an unexpected response. Try again."
-                        }
+                        val text = conn.inputStream.bufferedReader().use { it.readText() }
+                        val b64 = JSONObject(text)
+                            .getJSONArray("data")
+                            .getJSONObject(0)
+                            .getString("b64_json")
+                        val bytes = Base64.decode(b64, Base64.DEFAULT)
+                        bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                     } else {
                         val text = conn.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
-                        val errObj = JSONObject(text).optJSONArray("errors")?.optJSONObject(0)
-                        val cfCode = errObj?.optInt("code", -1) ?: -1
-                        val cfMsg = errObj?.optString("message", "") ?: ""
-                        errText = "CF " + code + " (code " + cfCode + "): " + cfMsg.take(140)
+                        val msg = try { JSONObject(text).optJSONObject("error")?.optString("message") ?: text.take(140) } catch (e: Exception) { text.take(140) }
+                        errText = "Together error " + code + ": " + msg
                     }
                     conn.disconnect()
                 } catch (e: Exception) {
@@ -138,9 +138,7 @@ class ImageFragment : Fragment() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 saveImage()
             } else {
-                if
- (
-ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == android.content.pm.PackageManager.PERMISSION_GRANTED) saveImage()
                 else writePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             }
