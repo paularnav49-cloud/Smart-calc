@@ -38,23 +38,19 @@ jobs:
 
       - name: Report build errors as issue
         if: failure()
-        run: |
-          {
-            echo "Build failed on commit ${{ github.sha }}"
-            echo
-            echo '~~~'
-            grep -E "^e: |error:|FAILURE|Caused by|Execution failed|> Task.*FAILED|AAPT|resource linking" build.log | head -60
-            echo
-            echo "### Last 60 lines"
-            echo '~~~'
-            tail -60 build.log
-            echo '~~~'
-          } > /tmp/body.md
-          curl -s -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${{ github.repository }}/issues \
-            -d '{"title":"Build failed — error report","body":"'"$(sed "s/\\/\\\\/g;s/"/\\"/g" /tmp/body.md | tr '\n' ' ' | sed 's/  */ /g')"'"}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const log = fs.readFileSync('build.log', 'utf8');
+            const errLines = log.split('\n').filter(l => /(?:^e: |error:|FAILURE|Caused by|Execution failed|FAILED|resource linking|AAPT)/.test(l));
+            const excerpt = (errLines.length ? errLines.slice(0, 60).join('\n') : log.split('\n').slice(-60).join('\n'));
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Build failed — error report',
+              body: 'Build failed on commit ' + context.sha + '\n\n~~~\n' + excerpt + '\n~~~\n\nLast 60 lines:\n\n~~~\n' + log.split('\n').slice(-60).join('\n') + '\n~~~'
+            });
 
       - name: Rename APK
         if: success()
