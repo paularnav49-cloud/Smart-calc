@@ -27,12 +27,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.btn_voice).setOnClickListener { swap(VoiceFragment()) }
+        findViewById<TextView>(R.id.btn_finance).setOnClickListener { swap(FinanceFragment()) }
         findViewById<TextView>(R.id.btn_chat).setOnClickListener {
             startActivity(Intent(this, ChatActivity::class.java))
         }
     }
 
-    private fun swap(f: Fragment) {
+    fun swap(f: Fragment) {
         supportFragmentManager.beginTransaction().replace(R.id.container, f).commit()
     }
 }
