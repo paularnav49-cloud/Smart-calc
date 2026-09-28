@@ -43,17 +43,6 @@
             android:text="AI chat"
             android:textColor="@color/md_accent"
             android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/btn_image"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:gravity="center"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:text="Image"
-            android:textColor="@color/md_accent"
-            android:textSize="15sp" />
     </LinearLayout>
 
     <View

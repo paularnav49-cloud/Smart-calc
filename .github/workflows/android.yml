@@ -29,7 +29,6 @@ jobs:
       - name: Add API keys
         run: |
           printf 'groqApiKey=%s\n' "${{ secrets.GROQ_API_KEY }}" >> local.properties
-          printf 'openrouterApiKey=%s\n' "${{ secrets.OPENROUTER_API_KEY }}" >> local.properties
 
       - name: Build debug APK
         run: |

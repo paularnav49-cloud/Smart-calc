@@ -27,7 +27,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.btn_voice).setOnClickListener { swap(VoiceFragment()) }
-        findViewById<TextView>(R.id.btn_image).setOnClickListener { swap(ImageFragment()) }
         findViewById<TextView>(R.id.btn_chat).setOnClickListener {
             startActivity(Intent(this, ChatActivity::class.java))
         }
