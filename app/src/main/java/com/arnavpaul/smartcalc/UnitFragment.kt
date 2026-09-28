@@ -4,12 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
+import com.google.android.material.textfield.TextInputEditText
 
 class UnitFragment : Fragment() {
 
@@ -35,37 +34,38 @@ class UnitFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val cat = view.findViewById<Spinner>(R.id.unit_cat)
-        cat.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, cats)
-        setupUnits(view, "Length")
+        val cat = view.findViewById<MaterialAutoCompleteTextView>(R.id.unit_cat)
+        val from = view.findViewById<MaterialAutoCompleteTextView>(R.id.unit_from)
+        val to = view.findViewById<MaterialAutoCompleteTextView>(R.id.unit_to)
 
-        cat.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p: android.widget.AdapterView<*>, v: View?, pos: Int, id: Long) {
-                setupUnits(view, cats[pos])
-            }
-            override fun onNothingSelected(p: android.widget.AdapterView<*>) {}
+        cat.setSimpleItems(cats.toTypedArray())
+        cat.setOnItemClickListener { _, _, pos, _ ->
+            setupUnits(cats[pos], from, to)
+            show("")
         }
+        setupUnits("Length", from, to)
+        cat.setText(cats[0], false)
 
-        view.findViewById<Button>(R.id.unit_go).setOnClickListener { convert() }
+        view.findViewById<MaterialButton>(R.id.unit_go).setOnClickListener { convert() }
     }
 
-    private fun setupUnits(view: View, cat: String) {
+    private fun setupUnits(cat: String, from: MaterialAutoCompleteTextView, to: MaterialAutoCompleteTextView) {
         val list = units[cat] ?: return
-        view.findViewById<Spinner>(R.id.unit_from).adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, list)
-        view.findViewById<Spinner>(R.id.unit_to).adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, list)
+        from.setSimpleItems(list.toTypedArray())
+        to.setSimpleItems(list.toTypedArray())
+        from.setText(list[0], false)
+        to.setText(list[1], false)
     }
 
     private fun convert() {
-        val cat = view?.findViewById<Spinner>(R.id.unit_cat)?.selectedItem as? String ?: return
-        val v = view?.findViewById<EditText>(R.id.unit_value)?.text?.toString()?.toDoubleOrNull()
+        val cat = view?.findViewById<MaterialAutoCompleteTextView>(R.id.unit_cat)?.text?.toString() ?: return
+        val v = view?.findViewById<TextInputEditText>(R.id.unit_value)?.text?.toString()?.toDoubleOrNull()
         if (v == null) {
-            show("Enter a value")
+            show("Enter a value to convert.")
             return
         }
-        val from = view?.findViewById<Spinner>(R.id.unit_from)?.selectedItem as? String ?: return
-        val to = view?.findViewById<Spinner>(R.id.unit_to)?.selectedItem as? String ?: return
+        val from = view?.findViewById<MaterialAutoCompleteTextView>(R.id.unit_from)?.text?.toString() ?: return
+        val to = view?.findViewById<MaterialAutoCompleteTextView>(R.id.unit_to)?.text?.toString() ?: return
 
         val result = if (cat == "Temperature") {
             fromC(toC(v, from), to)
@@ -73,7 +73,7 @@ class UnitFragment : Fragment() {
             val f = factor[from]
             val t = factor[to]
             if (f == null || t == null) {
-                show("Not supported")
+                show("That unit is not supported.")
                 return
             }
             v * f / t

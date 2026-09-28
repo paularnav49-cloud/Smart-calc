@@ -4,40 +4,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 
 class PercentageFragment : Fragment() {
 
     private val modes = listOf("X% of Y", "X is what % of Y", "% change from X to Y")
+    private var selectedMode = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.fragment_percent, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val dropdown = view.findViewById<MaterialAutoCompleteTextView>(R.id.percent_mode_hint)
-        val autoComplete = view.findViewById<MaterialAutoCompleteTextView>(androidx.core.R.id.text_input_dropdown_icon)
-        val mode = view.findViewById<MaterialAutoCompleteTextView>(R.id.percent_mode_auto)
-        val spinner = view.findViewById<MaterialAutoCompleteTextView>(R.id.percent_mode_field)
-        val field = view.findViewById<MaterialAutoCompleteTextView>(R.id.percent_mode_field)
-
-        val modeField: MaterialAutoCompleteTextView = view.findViewById(R.id.percent_mode_field)
+        val modeField = view.findViewById<MaterialAutoCompleteTextView>(R.id.percent_mode_field)
         modeField.setSimpleItems(modes.toTypedArray())
         modeField.setOnItemClickListener { _, _, pos, _ -> selectedMode = pos }
         modeField.setText(modes[selectedMode], false)
 
-        view.findViewById<MaterialButton>(R.id.percent_go).setOnClickListener {
-            compute(modeField.text.toString())
-        }
+        view.findViewById<MaterialButton>(R.id.percent_go).setOnClickListener { compute(modes[selectedMode]) }
     }
-
-    private var selectedMode = 0
 
     private fun compute(mode: String) {
         val a = view?.findViewById<TextInputEditText>(R.id.percent_a)?.text?.toString()?.toDoubleOrNull()

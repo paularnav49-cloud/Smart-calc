@@ -4,12 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
+import com.google.android.material.textfield.TextInputEditText
 import org.json.JSONObject
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
@@ -24,39 +23,39 @@ class CurrencyFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val from = view.findViewById<Spinner>(R.id.cur_from)
-        val to = view.findViewById<Spinner>(R.id.cur_to)
-        from.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, codes)
-        to.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, codes)
-        from.setSelection(0)
-        to.setSelection(3)
+        val from = view.findViewById<MaterialAutoCompleteTextView>(R.id.cur_from)
+        val to = view.findViewById<MaterialAutoCompleteTextView>(R.id.cur_to)
+        from.setSimpleItems(codes.toTypedArray())
+        to.setSimpleItems(codes.toTypedArray())
+        from.setText(codes[0], false)
+        to.setText(codes[3], false)
 
-        view.findViewById<Button>(R.id.cur_swap).setOnClickListener {
-            val f = from.selectedItemPosition
-            from.setSelection(to.selectedItemPosition)
-            to.setSelection(f)
+        view.findViewById<MaterialButton>(R.id.cur_swap).setOnClickListener {
+            val f = from.text.toString()
+            from.setText(to.text.toString(), false)
+            to.setText(f, false)
         }
 
-        view.findViewById<Button>(R.id.cur_go).setOnClickListener {
+        view.findViewById<MaterialButton>(R.id.cur_go).setOnClickListener {
             val r = rates
-            if (r == null) fetch { ok -> if (ok) convert() else show("Could not load rates. Check internet.") }
+            if (r == null) fetch { ok -> if (ok) convert() else show("Could not load rates. Check your connection and try again.") }
             else convert()
         }
     }
 
     private fun convert() {
-        val amount = view?.findViewById<EditText>(R.id.cur_amount)?.text?.toString()?.toDoubleOrNull()
+        val amount = view?.findViewById<TextInputEditText>(R.id.cur_amount)?.text?.toString()?.toDoubleOrNull()
         if (amount == null) {
-            show("Enter an amount")
+            show("Enter an amount to convert.")
             return
         }
         val r = rates ?: return
-        val from = view?.findViewById<Spinner>(R.id.cur_from)?.selectedItem as? String ?: return
-        val to = view?.findViewById<Spinner>(R.id.cur_to)?.selectedItem as? String ?: return
+        val from = view?.findViewById<MaterialAutoCompleteTextView>(R.id.cur_from)?.text?.toString() ?: return
+        val to = view?.findViewById<MaterialAutoCompleteTextView>(R.id.cur_to)?.text?.toString() ?: return
         val f = r[from]
         val t = r[to]
         if (f == null || t == null) {
-            show("Currency not supported")
+            show("That currency is not supported.")
             return
         }
         show(Evaluator.fmt(amount * t / f) + " " + to)
