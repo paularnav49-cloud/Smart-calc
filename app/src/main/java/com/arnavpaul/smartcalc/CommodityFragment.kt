@@ -56,7 +56,7 @@ class CommodityFragment : Fragment() {
                     c.readTimeout = 15000
                     c.setRequestProperty("User-Agent", "Mozilla/5.0 (Android)")
                     val meta = JSONObject(c.inputStream.bufferedReader().use { it.readText() })
-                        .getJSONObject("chart").getJSONObject("result").getJSONObject(0).getJSONObject("meta")
+                        .getJSONObject("chart").getJSONArray("result").getJSONObject(0).getJSONObject("meta")
                     val price = meta.getDouble("regularMarketPrice")
                     val prev = meta.optDouble("chartPreviousClose", price)
                     quotes[sym[1] as String] = doubleArrayOf(price, prev)

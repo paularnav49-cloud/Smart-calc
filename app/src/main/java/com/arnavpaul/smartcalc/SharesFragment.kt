@@ -2,7 +2,6 @@ package com.arnavpaul.smartcalc
 
 import android.graphics.Color
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -95,28 +94,28 @@ class SharesFragment : Fragment() {
 
         val title = TextView(ctx)
         title.text = name
-        title.textAppearance = android.R.style.TextAppearance_Material_Subhead
         title.textSize = 15f
-        title.setTextColor(getColor(requireContext(), R.color.md_on_background))
+        title.setTypeface(android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL))
+        title.setTextColor(ctx.getColor(R.color.md_on_background))
 
         val sub = TextView(ctx)
-        sub.text = symbol + "  &#183;  " + exch
+        sub.text = symbol + "  -  " + exch
         sub.textSize = 12f
-        sub.setTextColor(getColor(requireContext(), R.color.md_on_background_muted))
+        sub.setTextColor(ctx.getColor(R.color.md_on_background_muted))
 
         val price = TextView(ctx)
         price.textSize = 15f
-        price.setTextColor(getColor(requireContext(), R.color.md_accent))
+        price.setTextColor(ctx.getColor(R.color.md_accent))
         price.setPadding(0, (6 * resources.displayMetrics.density).toInt(), 0, 0)
 
         row.addView(title)
         row.addView(sub)
         row.addView(price)
-        row.setOnClickListener { fetchQuote(symbol, price, row) }
+        row.setOnClickListener { fetchQuote(symbol, price) }
         container.addView(row)
     }
 
-    private fun fetchQuote(symbol: String, priceView: TextView, row: LinearLayout) {
+    private fun fetchQuote(symbol: String, priceView: TextView) {
         priceView.text = "loading..."
         thread {
             var text: String? = null
@@ -138,7 +137,7 @@ class SharesFragment : Fragment() {
                     return@runOnUiThread
                 }
                 try {
-                    val meta = JSONObject(text).getJSONObject("chart").getJSONObject("result")
+                    val meta = JSONObject(text).getJSONObject("chart").getJSONArray("result")
                         .getJSONObject(0).getJSONObject("meta")
                     val p = meta.getDouble("regularMarketPrice")
                     val prev = meta.optDouble("chartPreviousClose", p)

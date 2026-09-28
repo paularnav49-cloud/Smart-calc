@@ -92,20 +92,20 @@ class FundFragment : Fragment() {
         val title = TextView(ctx)
         title.text = name
         title.textSize = 14f
-        title.setTextColor(getColor(requireContext(), R.color.md_on_background))
+        title.setTextColor(ctx.getColor(R.color.md_on_background))
 
         val detail = TextView(ctx)
         detail.textSize = 13f
-        detail.setTextColor(getColor(requireContext(), R.color.md_accent))
+        detail.setTextColor(ctx.getColor(R.color.md_accent))
         detail.setPadding(0, (6 * resources.displayMetrics.density).toInt(), 0, 0)
 
         row.addView(title)
         row.addView(detail)
-        row.setOnClickListener { loadFund(code, name, detail) }
+        row.setOnClickListener { loadFund(code, detail) }
         container.addView(row)
     }
 
-    private fun loadFund(code: String, name: String, detail: TextView) {
+    private fun loadFund(code: String, detail: TextView) {
         detail.text = "loading..."
         thread {
             var err: String? = null
@@ -137,8 +137,7 @@ class FundFragment : Fragment() {
                     detail.text = "No NAV data available."
                     return@runOnUiThread
                 }
-                val out = buildSummary(navs)
-                detail.text = out
+                detail.text = buildSummary(navs)
             }
         }
     }
@@ -167,7 +166,8 @@ class FundFragment : Fragment() {
             }
             if (oldNav != null && oldNav > 0 && cur > oldNav) {
                 val cagr = (Math.pow(cur / oldNav, 1.0 / years) - 1.0) * 100.0
-                sb.append("\n").append(years).append("Y return: ")
+                sb.append("
+").append(years).append("Y return: ")
                     .append(String.format("%+.2f%% p.a.", cagr))
             }
         }
