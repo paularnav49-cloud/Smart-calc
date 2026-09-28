@@ -34,6 +34,7 @@
             android:hint="Question type">
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/percent_mode_field"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none" />
@@ -45,8 +46,7 @@
             android:layout_marginTop="16dp"
             android:hint="First number (X)">
 
-            <com.go
-ogle.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/percent_a"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

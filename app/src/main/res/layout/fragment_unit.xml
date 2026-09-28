@@ -45,8 +45,7 @@
             android:layout_marginTop="16dp"
             android:hint="Value">
 
-            <com.google.android.material.text
-field.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/unit_value"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -91,8 +90,7 @@ field.TextInputEditText
 
         <TextView
             android:id="@+id/unit_result"
-            android:layout_width="match
-_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:textAppearance="@style/TextAppearance.SmartCalc.Result"
