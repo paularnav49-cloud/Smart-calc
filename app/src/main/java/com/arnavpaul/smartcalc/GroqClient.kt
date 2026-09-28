@@ -26,7 +26,7 @@ object GroqClient {
                     .put("content", "You are a math and general assistant inside a calculator app. Keep answers short and clear."))
                 history.forEach { msgs.put(JSONObject().put("role", it.role).put("content", it.content)) }
                 val body = JSONObject()
-                    .put("model", "llama-3.3-70b-versatile")
+                    .put("model", "openai/gpt-oss-120b")
                     .put("messages", msgs)
                     .put("temperature", 0.4)
 
