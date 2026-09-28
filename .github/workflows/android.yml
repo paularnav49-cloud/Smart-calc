@@ -31,18 +31,38 @@ jobs:
           GROQ_KEY: ${{ secrets.GROQ_API_KEY }}
 
       - name: Build debug APK
-        run: gradle assembleDebug --no-daemon --stacktrace
+        id: build
+        run: |
+          set -o pipefail
+          gradle assembleDebug --no-daemon --stacktrace 2>&1 | tee build.log
+
+      - name: Surface build errors
+        if: failure()
+        run: |
+          {
+            echo "## Build failure details"
+            echo "```"
+            grep -n -E "^e: |error:|ERROR|FAILURE|Caused by|> Task.*FAILED|Execution failed" build.log | head -100
+            echo "```"
+            echo "### Tail of log"
+            echo "```"
+            tail -80 build.log
+            echo "```"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Rename APK
+        if: success()
         run: mv app/build/outputs/apk/debug/app-debug.apk SmartCalc.apk
 
       - name: Upload APK artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: SmartCalc-debug-apk
           path: SmartCalc.apk
 
       - name: Create release with APK
+        if: success()
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.${{ github.run_number }}
