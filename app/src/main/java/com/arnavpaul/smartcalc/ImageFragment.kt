@@ -50,6 +50,7 @@ class ImageFragment : Fragment() {
         go.setOnClickListener {
             if (busy) return@setOnClickListener
   
+
           if (BuildConfig.CF_API_KEY.isEmpty() || BuildConfig.CF_ACCOUNT_ID.isEmpty()) {
                 error.text = "Cloudflare key is not configured in this build."
                 error.visibility = View.VISIBLE
@@ -88,14 +89,18 @@ class ImageFragment : Fragment() {
                     if (code in 200..299) {
                         val bytes = conn.inputStream.use { it.readBytes() }
                         if (bytes.size > 100 && bytes[0] == 0x89.toByte()) {
-                            bmp = BitmapFactory.decodeByteArray(bytes, 
+                            bmp = BitmapFactory.decodeByteArray(bytes,
+ 
 0, bytes.size)
                         } else {
                             errText = "Service returned an unexpected response. Try again."
                         }
                     } else {
                         val text = conn.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
-                        errText = "Cloudflare error " + code + ": " + JSONObject(text).optJSONArray("errors")?.optJSONObject(0)?.optString("message")?.take(120)
+                        val errObj = JSONObject(text).optJSONArray("errors")?.optJSONObject(0)
+                        val cfCode = errObj?.optInt("code", -1) ?: -1
+                        val cfMsg = errObj?.optString("message", "") ?: ""
+                        errText = "CF " + code + " (code " + cfCode + "): " + cfMsg.take(140)
                     }
                     conn.disconnect()
                 } catch (e: Exception) {
@@ -133,7 +138,8 @@ class ImageFragment : Fragment() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 saveImage()
             } else {
-                if (
+                if
+ (
 ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == android.content.pm.PackageManager.PERMISSION_GRANTED) saveImage()
                 else writePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
