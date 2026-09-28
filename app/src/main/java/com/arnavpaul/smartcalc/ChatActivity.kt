@@ -1,12 +1,20 @@
 package com.arnavpaul.smartcalc
 
+import android.Manifest
 import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.speech.RecognizerIntent
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -14,6 +22,16 @@ class ChatActivity : AppCompatActivity() {
 
     private val messages = ArrayList<Message>()
     private lateinit var adapter: ChatAdapter
+    private lateinit var input: EditText
+
+    private val speech = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val text = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()
+        if (!text.isNullOrEmpty()) input.setText(text)
+    }
+
+    private val permission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
+        if (ok) startSpeech() else Toast.makeText(this, "Microphone permission is required", Toast.LENGTH_SHORT).show()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,9 +42,17 @@ class ChatActivity : AppCompatActivity() {
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
 
-        val input = findViewById<EditText>(R.id.chat_input)
+        input = findViewById(R.id.chat_input)
         val send = findViewById<ImageButton>(R.id.chat_send)
-        animateInputBorder(input)
+        val mic = findViewById<ImageButton>(R.id.chat_mic)
+        val bar = findViewById<LinearLayout>(R.id.chat_bar)
+        animateBarBorder(bar, input)
+
+        mic.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED) startSpeech()
+            else permission.launch(Manifest.permission.RECORD_AUDIO)
+        }
 
         send.setOnClickListener { v ->
             v.animate().scaleX(0.88f).scaleY(0.88f).setDuration(90).withEndAction {
@@ -65,8 +91,20 @@ class ChatActivity : AppCompatActivity() {
         }
     }
 
-    private fun animateInputBorder(input: EditText) {
-        val bg = input.background.mutate() as GradientDrawable
+    private fun startSpeech() {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "Say your question")
+        }
+        try {
+            speech.launch(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Speech recognition not available on this device", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun animateBarBorder(bar: LinearLayout, input: EditText) {
+        val bg = bar.background.mutate() as GradientDrawable
         val dp = resources.displayMetrics.density
         val idleColor = getColor(R.color.md_outline)
         val focusColor = getColor(R.color.md_accent)
@@ -89,7 +127,7 @@ class ChatActivity : AppCompatActivity() {
                     val color = a.getAnimatedValue("c") as Int
                     val width = (a.getAnimatedValue("w") as Float).toInt()
                     bg.setStroke(width, color)
-                    input.background = bg
+                    bar.background = bg
                 }
                 start()
             }
