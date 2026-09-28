@@ -50,8 +50,8 @@ class ImageFragment : Fragment() {
 
         go.setOnClickListener {
             if (busy) return@setOnClickListener
-            if (BuildConfig.TOGETHER_API_KEY.isEmpty()) {
-                error.text = "Together AI key is not configured in this build."
+            if (BuildConfig.OPENROUTER_API_KEY.isEmpty()) {
+                error.text = "OpenRouter key is not configured in this build."
                 error.visibility = View.VISIBLE
                 return@setOnClickListener
             }
@@ -71,20 +71,16 @@ class ImageFragment : Fragment() {
                 var bmp: Bitmap? = null
                 var errText: String? = null
                 try {
-                    val conn = URL("https://api.together.xyz/v1/images/generations").openConnection() as HttpsURLConnection
+                    val conn = URL("https://openrouter.ai/api/v1/images").openConnection() as HttpsURLConnection
                     conn.requestMethod = "POST"
-                    conn.setRequestProperty("Authorization", "Bearer " + BuildConfig.TOGETHER_API_KEY)
+                    conn.setRequestProperty("Authorization", "Bearer " + BuildConfig.OPENROUTER_API_KEY)
                     conn.setRequestProperty("Content-Type", "application/json")
                     conn.connectTimeout = 30000
-                    conn.readTimeout = 120000
+                    conn.readTimeout = 180000
                     conn.doOutput = true
                     val body = JSONObject()
-                        .put("model", "black-forest-labs/FLUX.1-schnell-Free")
+                        .put("model", "google/gemini-2.5-flash-image")
                         .put("prompt", prompt)
-                        .put("width", 1024)
-                        .put("height", 1024)
-                        .put("steps", 4)
-                        .put("n", 1)
                         .toString()
                     conn.outputStream.use { it.write(body.toByteArray()) }
 
@@ -100,7 +96,7 @@ class ImageFragment : Fragment() {
                     } else {
                         val text = conn.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
                         val msg = try { JSONObject(text).optJSONObject("error")?.optString("message") ?: text.take(140) } catch (e: Exception) { text.take(140) }
-                        errText = "Together error " + code + ": " + msg
+                        errText = "OpenRouter error " + code + ": " + msg
                     }
                     conn.disconnect()
                 } catch (e: Exception) {

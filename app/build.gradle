@@ -17,12 +17,10 @@ android {
         applicationId "com.arnavpaul.smartcalc"
         minSdk 24
         targetSdk 34
-        versionCode 4
-        versionName "1.3"
+        versionCode 5
+        versionName "1.4"
         buildConfigField "String", "GROQ_API_KEY", "\"" + localProps.getProperty("groqApiKey", "").trim() + "\""
-        buildConfigField "String", "CF_API_KEY", "\"" + localProps.getProperty("cfApiKey", "").trim() + "\""
-        buildConfigField "String", "CF_ACCOUNT_ID", "\"" + localProps.getProperty("cfAccountId", "").trim() + "\""
-        buildConfigField "String", "TOGETHER_API_KEY", "\"" + localProps.getProperty("togetherApiKey", "").trim() + "\""
+        buildConfigField "String", "OPENROUTER_API_KEY", "\"" + localProps.getProperty("openrouterApiKey", "").trim() + "\""
     }
 
     buildTypes {
