@@ -166,8 +166,7 @@ class FundFragment : Fragment() {
             }
             if (oldNav != null && oldNav > 0 && cur > oldNav) {
                 val cagr = (Math.pow(cur / oldNav, 1.0 / years) - 1.0) * 100.0
-                sb.append("
-").append(years).append("Y return: ")
+                sb.append("\n").append(years).append("Y return: ")
                     .append(String.format("%+.2f%% p.a.", cagr))
             }
         }
