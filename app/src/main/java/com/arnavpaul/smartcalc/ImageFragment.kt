@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.ContentValues
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -21,9 +20,9 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import org.json.JSONObject
 import java.io.OutputStream
 import java.net.URL
-import java.net.URLEncoder
 import javax.net.ssl.HttpsURLConnection
 import kotlin.concurrent.thread
 
@@ -50,6 +49,11 @@ class ImageFragment : Fragment() {
 
         go.setOnClickListener {
             if (busy) return@setOnClickListener
+            if (BuildConfig.CF_API_KEY.isEmpty() || BuildConfig.CF_ACCOUNT_ID.isEmpty()) {
+                error.text = "Cloudflare key is not configured in this build."
+                error.visibility = View.VISIBLE
+                return@setOnClickListener
+            }
             val prompt = promptField.text.toString().trim()
             if (prompt.isEmpty()) {
                 Toast.makeText(requireContext(), "Describe the image first", Toast.LENGTH_SHORT).show()
@@ -63,42 +67,59 @@ class ImageFragment : Fragment() {
             progress.visibility = View.VISIBLE
 
             thread {
+                var bmp: Bitmap? = null
+                var errText: String? = null
                 try {
-                    val url = "https://image.pollinations.ai/prompt/" +
-                        URLEncoder.encode(prompt, "UTF-8") +
-                        "?width=1024&height=1024&nologo=true&model=flux"
+                    val url = "https://api.cloudflare.com/client/v4/accounts/"
+                        + BuildConfig.CF_ACCOUNT_ID
+                        + "/ai/run/@cf/black-forest-labs/flux-1-schnell"
                     val conn = URL(url).openConnection() as HttpsURLConnection
-                    conn.connectTimeout = 60000
-                    conn.readTimeout = 90000
-                    val bmp = BitmapFactory.decodeStream(conn.inputStream)
-                    conn.disconnect()
-                    activity?.runOnUiThread {
-                        busy = false
-                        go.isEnabled = true
-                        progress.visibility = View.GONE
-                        if (bmp == null) {
-                            error.text = "Could not generate the image. The service may be busy. Try again."
-                            error.visibility = View.VISIBLE
+                    conn.requestMethod = "POST"
+                    conn.setRequestProperty("Authorization", "Bearer " + BuildConfig.CF_API_KEY)
+                    conn.setRequestProperty("Content-Type", "application/json")
+                    conn.connectTimeout = 30000
+                    conn.readTimeout = 120000
+                    conn.doOutput = true
+                    val body = JSONObject().put("prompt", prompt).toString()
+                    conn.outputStream.use { it.write(body.toByteArray()) }
+
+                    val code = conn.responseCode
+                    if (code in 200..299) {
+                        val bytes = conn.inputStream.use { it.readBytes() }
+                        if (bytes.size > 100 && bytes[0] == 0x89.toByte()) {
+                            bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                         } else {
-                            bitmap = bmp
-                            result.setImageBitmap(bmp)
-                            result.visibility = View.VISIBLE
-                            saveHint.visibility = View.VISIBLE
-                            result.alpha = 0f
-                            result.scaleX = 0.94f
-                            result.scaleY = 0.94f
-                            result.animate().alpha(1f).scaleX(1f).scaleY(1f)
-                                .setDuration(320)
-                                .setInterpolator(AccelerateDecelerateInterpolator())
-                                .start()
+                            errText = "Service returned an unexpected response. Try again."
                         }
+                    } else {
+                        val text = conn.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
+                        errText = "Cloudflare error " + code + ": " + JSONObject(text).optJSONArray("errors")?.optJSONObject(0)?.optString("message")?.take(120)
                     }
+                    conn.disconnect()
                 } catch (e: Exception) {
-                    activity?.runOnUiThread {
-                        busy = false
-                        go.isEnabled = true
-                        progress.visibility = View.GONE
-                        error.text = "Network error. Check your connection and try again."
+                    errText = "Network error. Check your connection and try again."
+                }
+
+                val finalBmp = bmp
+                val finalErr = errText
+                activity?.runOnUiThread {
+                    busy = false
+                    go.isEnabled = true
+                    progress.visibility = View.GONE
+                    if (finalBmp != null) {
+                        bitmap = finalBmp
+                        result.setImageBitmap(finalBmp)
+                        result.visibility = View.VISIBLE
+                        saveHint.visibility = View.VISIBLE
+                        result.alpha = 0f
+                        result.scaleX = 0.94f
+                        result.scaleY = 0.94f
+                        result.animate().alpha(1f).scaleX(1f).scaleY(1f)
+                            .setDuration(320)
+                            .setInterpolator(AccelerateDecelerateInterpolator())
+                            .start()
+                    } else {
+                        error.text = finalErr ?: "Could not generate the image. Try again."
                         error.visibility = View.VISIBLE
                     }
                 }

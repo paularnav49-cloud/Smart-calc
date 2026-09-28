@@ -26,10 +26,11 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Add Groq API key
-        run: printf 'groqApiKey=%s\n' "$GROQ_KEY" >> local.properties
-        env:
-          GROQ_KEY: ${{ secrets.GROQ_API_KEY }}
+      - name: Add API keys
+        run: |
+          printf 'groqApiKey=%s\n' "${{ secrets.GROQ_API_KEY }}" >> local.properties
+          printf 'cfApiKey=%s\n' "${{ secrets.CLOUDFLARE_API_KEY }}" >> local.properties
+          printf 'cfAccountId=%s\n' "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" >> local.properties
 
       - name: Build debug APK
         run: |
