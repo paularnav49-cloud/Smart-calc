@@ -28,13 +28,12 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/percent_mode"
-            style="@style/Widget.Material3.TextInputLayout.ExposedDropdownMenu"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Question type">
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/percent_mode_field"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none" />
@@ -46,7 +45,8 @@
             android:layout_marginTop="16dp"
             android:hint="First number (X)">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <com.go
+ogle.android.material.textfield.TextInputEditText
                 android:id="@+id/percent_a"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
