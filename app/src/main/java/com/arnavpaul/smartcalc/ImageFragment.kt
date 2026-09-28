@@ -49,7 +49,8 @@ class ImageFragment : Fragment() {
 
         go.setOnClickListener {
             if (busy) return@setOnClickListener
-            if (BuildConfig.CF_API_KEY.isEmpty() || BuildConfig.CF_ACCOUNT_ID.isEmpty()) {
+  
+          if (BuildConfig.CF_API_KEY.isEmpty() || BuildConfig.CF_ACCOUNT_ID.isEmpty()) {
                 error.text = "Cloudflare key is not configured in this build."
                 error.visibility = View.VISIBLE
                 return@setOnClickListener
@@ -70,9 +71,9 @@ class ImageFragment : Fragment() {
                 var bmp: Bitmap? = null
                 var errText: String? = null
                 try {
-                    val url = "https://api.cloudflare.com/client/v4/accounts/"
-                        + BuildConfig.CF_ACCOUNT_ID
-                        + "/ai/run/@cf/black-forest-labs/flux-1-schnell"
+                    val url = "https://api.cloudflare.com/client/v4/accounts/" +
+                        BuildConfig.CF_ACCOUNT_ID +
+                        "/ai/run/@cf/black-forest-labs/flux-1-schnell"
                     val conn = URL(url).openConnection() as HttpsURLConnection
                     conn.requestMethod = "POST"
                     conn.setRequestProperty("Authorization", "Bearer " + BuildConfig.CF_API_KEY)
@@ -87,7 +88,8 @@ class ImageFragment : Fragment() {
                     if (code in 200..299) {
                         val bytes = conn.inputStream.use { it.readBytes() }
                         if (bytes.size > 100 && bytes[0] == 0x89.toByte()) {
-                            bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                            bmp = BitmapFactory.decodeByteArray(bytes, 
+0, bytes.size)
                         } else {
                             errText = "Service returned an unexpected response. Try again."
                         }
@@ -131,7 +133,8 @@ class ImageFragment : Fragment() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 saveImage()
             } else {
-                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                if (
+ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == android.content.pm.PackageManager.PERMISSION_GRANTED) saveImage()
                 else writePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             }
