@@ -1,0 +1,24 @@
+<resources>
+    <!-- Base surfaces -->
+    <color name="md_background">#111113</color>
+    <color name="md_surface">#191A1C</color>
+    <color name="md_surface_variant">#232426</color>
+    <color name="md_outline">#333437</color>
+
+    <!-- Text -->
+    <color name="md_on_background">#EDEDEC</color>
+    <color name="md_on_background_muted">#9C9C98</color>
+
+    <!-- Single accent -->
+    <color name="md_accent">#A9B4F2</color>
+    <color name="md_on_accent">#14183B</color>
+    <color name="md_accent_container">#2A3160</color>
+
+    <!-- Feedback -->
+    <color name="md_error">#F2B8B5</color>
+
+    <!-- Legacy refs -->
+    <color name="primary">#A9B4F2</color>
+    <color name="white">#EDEDEC</color>
+    <color name="bg_chip">#232426</color>
+</resources>

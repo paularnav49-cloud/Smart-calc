@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="SmartCalc">
+        <attr name="tabularNums" format="integer" />
+    </declare-styleable>
+</resources>

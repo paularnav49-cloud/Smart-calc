@@ -6,22 +6,38 @@
     android:orientation="vertical"
     android:padding="24dp">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Voice calculator"
+        android:textAppearance="@style/TextAppearance.SmartCalc.Title" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center_horizontal"
+        android:text="Say a calculation out loud, like 25 plus 17 into 3."
+        android:textAppearance="@style/TextAppearance.SmartCalc.Body"
+        android:textColor="@color/md_on_background_muted" />
+
     <Button
         android:id="@+id/voice_mic"
+        style="@style/Widget.SmartCalc.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:padding="24dp"
-        android:text="Speak a calculation"
-        android:textSize="18sp" />
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:text="Speak a calculation" />
 
     <TextView
         android:id="@+id/voice_heard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="40dp"
         android:gravity="center"
-        android:textSize="18sp" />
+        android:textAppearance="@style/TextAppearance.SmartCalc.Body" />
 
     <TextView
         android:id="@+id/voice_result"
@@ -29,6 +45,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:textSize="32sp"
-        android:textStyle="bold" />
+        android:textAppearance="@style/TextAppearance.SmartCalc.Result"
+        android:textColor="@color/md_accent" />
 </LinearLayout>

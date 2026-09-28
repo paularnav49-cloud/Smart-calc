@@ -13,9 +13,8 @@
         <item name="colorOutline">@color/md_outline</item>
         <item name="colorOnBackground">@color/md_on_background</item>
         <item name="android:statusBarColor">@color/md_background</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
         <item name="android:textColor">@color/md_on_background</item>
         <item name="android:textColorHint">@color/md_on_background_muted</item>
-        <item name="tabularNums">@integer/tabular_on</item>
     </style>
 </resources>

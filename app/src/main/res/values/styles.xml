@@ -1,0 +1,57 @@
+<resources>
+    <!-- Typography -->
+    <style name="TextAppearance.SmartCalc.Title" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:letterSpacing">-0.01</item>
+    </style>
+
+    <style name="TextAppearance.SmartCalc.Section" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextAppearance.SmartCalc.Body" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">15sp</item>
+        <item name="android:lineHeight">22sp</item>
+    </style>
+
+    <style name="TextAppearance.SmartCalc.Result" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">36sp</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+
+    <style name="TextAppearance.SmartCalc.Display" parent="TextAppearance.Material3.DisplayMedium">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">44sp</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+
+    <!-- Buttons -->
+    <style name="Widget.SmartCalc.Button" parent="Widget.Material3.Button">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+    </style>
+
+    <style name="Widget.SmartCalc.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <!-- Calculator keypad -->
+    <style name="Widget.SmartCalc.Key" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/md_on_background</item>
+        <item name="android:background">@drawable/bg_key</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
+
+    <style name="Widget.SmartCalc.Key.Operator" parent="Widget.SmartCalc.Key">
+        <item name="android:textColor">@color/md_accent</item>
+        <item name="android:background">@drawable/bg_key_accent</item>
+    </style>
+</resources>

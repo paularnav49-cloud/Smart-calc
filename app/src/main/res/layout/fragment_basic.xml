@@ -2,19 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="?android:colorBackground">
 
-    <EditText
+    <TextView
         android:id="@+id/display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:cursorVisible="false"
-        android:focusable="false"
         android:gravity="end"
         android:hint="0"
-        android:padding="20dp"
-        android:textSize="32sp" />
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="28dp"
+        android:paddingBottom="28dp"
+        android:textAppearance="@style/TextAppearance.SmartCalc.Display" />
 
     <android.widget.GridLayout
         android:id="@+id/pad"
@@ -22,5 +23,5 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:columnCount="4"
-        android:padding="8dp" />
+        android:padding="12dp" />
 </LinearLayout>

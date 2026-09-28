@@ -5,11 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 
 class PercentageFragment : Fragment() {
 
@@ -20,29 +21,44 @@ class PercentageFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val spinner = view.findViewById<Spinner>(R.id.percent_mode)
-        spinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, modes)
-        view.findViewById<Button>(R.id.percent_go).setOnClickListener { compute(spinner.selectedItemPosition) }
+        val dropdown = view.findViewById<MaterialAutoCompleteTextView>(R.id.percent_mode_hint)
+        val autoComplete = view.findViewById<MaterialAutoCompleteTextView>(androidx.core.R.id.text_input_dropdown_icon)
+        val mode = view.findViewById<MaterialAutoCompleteTextView>(R.id.percent_mode_auto)
+        val spinner = view.findViewById<MaterialAutoCompleteTextView>(R.id.percent_mode_field)
+        val field = view.findViewById<MaterialAutoCompleteTextView>(R.id.percent_mode_field)
+
+        val modeField: MaterialAutoCompleteTextView = view.findViewById(R.id.percent_mode_field)
+        modeField.setSimpleItems(modes.toTypedArray())
+        modeField.setOnItemClickListener { _, _, pos, _ -> selectedMode = pos }
+        modeField.setText(modes[selectedMode], false)
+
+        view.findViewById<MaterialButton>(R.id.percent_go).setOnClickListener {
+            compute(modeField.text.toString())
+        }
     }
 
-    private fun num(id: Int): Double? =
-        view?.findViewById<EditText>(id)?.text?.toString()?.toDoubleOrNull()
+    private var selectedMode = 0
 
-    private fun show(s: String) {
-        view?.findViewById<TextView>(R.id.percent_result)?.text = s
-    }
-
-    private fun compute(mode: Int) {
-        val a = num(R.id.percent_a)
-        val b = num(R.id.percent_b)
+    private fun compute(mode: String) {
+        val a = view?.findViewById<TextInputEditText>(R.id.percent_a)?.text?.toString()?.toDoubleOrNull()
+        val b = view?.findViewById<TextInputEditText>(R.id.percent_b)?.text?.toString()?.toDoubleOrNull()
+        val result = view?.findViewById<TextView>(R.id.percent_result) ?: return
         if (a == null || b == null) {
-            show("Enter both numbers")
+            result.text = "Enter both numbers to continue."
+            result.setTextColor(requireContext().getColor(R.color.md_on_background_muted))
             return
         }
-        when (mode) {
-            0 -> show(Evaluator.fmt(a / 100.0 * b))
-            1 -> if (b == 0.0) show("Cannot divide by 0") else show(Evaluator.fmt(a / b * 100.0) + "%")
-            2 -> if (a == 0.0) show("Cannot divide by 0") else show(Evaluator.fmt((b - a) / a * 100.0) + "%")
+        val value = when (mode) {
+            modes[0] -> a / 100.0 * b
+            modes[1] -> if (b == 0.0) null else a / b * 100.0
+            else -> if (a == 0.0) null else (b - a) / a * 100.0
+        }
+        if (value == null) {
+            result.text = "Cannot divide by zero. Change the numbers and try again."
+            result.setTextColor(requireContext().getColor(R.color.md_error))
+        } else {
+            result.text = Evaluator.fmt(value) + if (mode != modes[0]) "%" else ""
+            result.setTextColor(requireContext().getColor(R.color.md_accent))
         }
     }
 }

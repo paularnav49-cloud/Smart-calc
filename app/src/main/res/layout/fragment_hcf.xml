@@ -3,40 +3,64 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="20dp">
 
-    <EditText
-        android:id="@+id/hcf_input"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter whole numbers, e.g. 12, 18, 30"
-        android:inputType="text" />
+        android:text="HCF and LCM"
+        android:textAppearance="@style/TextAppearance.SmartCalc.Title" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="20dp"
+        android:text="Enter two or more whole numbers, separated by commas."
+        android:textAppearance="@style/TextAppearance.SmartCalc.Body"
+        android:textColor="@color/md_on_background_muted" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Numbers, e.g. 12, 18, 30">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/hcf_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/btn_hcf"
+            style="@style/Widget.SmartCalc.Button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="HCF" />
+            android:text="Find HCF" />
 
         <Button
             android:id="@+id/btn_lcm"
+            style="@style/Widget.SmartCalc.Button.Tonal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:text="LCM" />
+            android:text="Find LCM" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/hcf_result"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:textSize="24sp" />
+        android:layout_marginTop="32dp"
+        android:textAppearance="@style/TextAppearance.SmartCalc.Result"
+        android:textColor="@color/md_accent" />
 </LinearLayout>

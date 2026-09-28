@@ -1,0 +1,5 @@
+<resources>
+    <style name="Widget.SmartCalc.NavIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/md_accent_container</item>
+    </style>
+</resources>
