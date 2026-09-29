@@ -6,7 +6,7 @@ plugins {
 def localProps = new Properties()
 def localPropsFile = rootProject.file("local.properties")
 if (localPropsFile.exists()) {
-    localPropsFile.withInputStream { localProps.load(it) }
+    localProps.withInputStream { localProps.load(it) }
 }
 
 android {
@@ -17,8 +17,8 @@ android {
         applicationId "com.arnavpaul.smartcalc"
         minSdk 24
         targetSdk 34
-        versionCode 9
-        versionName "1.9"
+        versionCode 10
+        versionName "1.10"
         buildConfigField "String", "GROQ_API_KEY", "\"" + localProps.getProperty("groqApiKey", "").trim() + "\""
     }
 
