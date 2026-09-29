@@ -1,89 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="?android:colorBackground">
 
-    <TextView
+    <com.arnavpaul.smartcalc.AmbientGlowView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="18dp"
-        android:paddingBottom="14dp"
-        android:text="AI assistant"
-        android:textAppearance="@style/TextAppearance.SmartCalc.Title" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chat_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="8dp"
-        android:scrollbars="vertical" />
+        android:layout_height="match_parent" />
 
     <LinearLayout
-        android:id="@+id/chat_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical|bottom"
-        android:background="@drawable/bg_input"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="12dp"
-        android:paddingStart="6dp"
-        android:paddingEnd="6dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/chat_plus"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_plus"
-            android:contentDescription="Attach" />
-
-        <EditText
-            android:id="@+id/chat_input"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="14dp"
+            android:text="AI assistant"
+            android:textAppearance="@style/TextAppearance.SmartCalc.Title" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chat_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@null"
-            android:minHeight="40dp"
-            android:maxLines="5"
-            android:inputType="text"
-            android:hint="Ask anything..."
-            android:textSize="15sp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp" />
+            android:clipToPadding="false"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"
+            android:scrollbars="vertical" />
 
-        <ImageButton
-            android:id="@+id/chat_mic"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_mic"
-            android:contentDescription="Voice input" />
+        <LinearLayout
+            android:id="@+id/chat_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical|bottom"
+            android:background="@drawable/bg_input"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp">
 
-        <ImageButton
-            android:id="@+id/chat_send"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginStart="4dp"
-            android:background="@drawable/bg_send"
-            android:src="@drawable/ic_send"
-            android:padding="12dp"
-            android:contentDescription="Send"
-            android:stateListAnimator="@null" />
+            <ImageButton
+                android:id="@+id/chat_plus"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_plus"
+                android:contentDescription="Attach" />
+
+            <EditText
+                android:id="@+id/chat_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:minHeight="40dp"
+                android:maxLines="5"
+                android:inputType="text"
+                android:hint="Ask anything..."
+                android:textSize="15sp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp" />
+
+            <ImageButton
+                android:id="@+id/chat_mic"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_mic"
+                android:contentDescription="Voice input" />
+
+            <ImageButton
+                android:id="@+id/chat_send"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/bg_send"
+                android:src="@drawable/ic_send"
+                android:padding="12dp"
+                android:contentDescription="Send"
+                android:stateListAnimator="@null" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</FrameLayout>
