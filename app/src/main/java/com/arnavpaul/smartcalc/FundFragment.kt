@@ -143,6 +143,7 @@ class FundFragment : Fragment() {
     }
 
     private fun buildSummary(navs: ArrayList<Array<Any>>): String {
+        // mfapi.in returns NAVs newest-first.
         val fmt = SimpleDateFormat("dd-MM-yyyy", Locale.US)
         fmt.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
         val cur = navs[0][1] as Double
@@ -150,24 +151,25 @@ class FundFragment : Fragment() {
         val sb = StringBuilder()
         sb.append("Current NAV: ").append(String.format("%.4f", cur))
         sb.append("  (").append(navs[0][0]).append(")")
-        val periods = arrayOf(1, 3, 5)
-        for (years in periods) {
+        for (years in arrayOf(1, 3, 5)) {
             val target = Calendar.getInstance()
             target.time = curDate
             target.add(Calendar.YEAR, -years)
             var oldNav: Double? = null
-            for (i in navs.size - 1 downTo 1) {
-                val d = fmt.parse(navs[i][0] as String)
-                if (d != null && !d.before(target.time)) {
+            // Walk from newest toward older; first NAV at/before the target date.
+            for (i in 1 until navs.size) {
+                val d = fmt.parse(navs[i][0] as String) ?: continue
+                if (!d.after(target.time)) {
                     oldNav = navs[i][1] as Double
-                } else if (d != null && d.before(target.time)) {
                     break
                 }
             }
-            if (oldNav != null && oldNav > 0 && cur > oldNav) {
+            if (oldNav != null && oldNav > 0) {
                 val cagr = (Math.pow(cur / oldNav, 1.0 / years) - 1.0) * 100.0
                 sb.append("\n").append(years).append("Y return: ")
                     .append(String.format("%+.2f%% p.a.", cagr))
+            } else {
+                sb.append("\n").append(years).append("Y return: n/a")
             }
         }
         return sb.toString()
