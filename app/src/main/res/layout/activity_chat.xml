@@ -5,6 +5,7 @@
     android:background="?android:colorBackground">
 
     <com.arnavpaul.smartcalc.AmbientGlowView
+        android:id="@+id/chat_glow"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -23,17 +24,36 @@
             android:text="AI assistant"
             android:textAppearance="@style/TextAppearance.SmartCalc.Title" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/chat_list"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clipToPadding="false"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="8dp"
-            android:scrollbars="vertical" />
+            android:layout_weight="1">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/chat_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp"
+                android:scrollbars="vertical" />
+
+            <TextView
+                android:id="@+id/chat_hero"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingStart="32dp"
+                android:paddingEnd="32dp"
+                android:text="What do you want to ask?"
+                android:textColor="#1C1C1E"
+                android:textSize="26sp"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.01"
+                android:alpha="0" />
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/chat_bar"

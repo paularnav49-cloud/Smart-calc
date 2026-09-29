@@ -8,9 +8,12 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.view.View
+import android.view.animation.OvershootInterpolator
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -42,7 +45,19 @@ class ChatActivity : AppCompatActivity() {
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
 
-        input = findViewById(R.id.chat_input)
+        // Hero text: soft fade-and-rise in when the screen opens.
+        val hero = findViewById<TextView>(R.id.chat_hero)
+        hero.alpha = 0f
+        hero.translationY = 18f
+        hero.animate()
+            .alpha(1f)
+            .translationY(0f)
+            .setDuration(700L)
+            .setStartDelay(150L)
+            .setInterpolator(OvershootInterpolator(1.1f))
+            .start()
+
+        input = findViewById<EditText>(R.id.chat_input)
         val send = findViewById<ImageButton>(R.id.chat_send)
         val mic = findViewById<ImageButton>(R.id.chat_mic)
         val bar = findViewById<LinearLayout>(R.id.chat_bar)
@@ -61,6 +76,11 @@ class ChatActivity : AppCompatActivity() {
 
             val text = input.text.toString().trim()
             if (text.isEmpty()) return@setOnClickListener
+            if (hero.visibility == View.VISIBLE) {
+                hero.animate().alpha(0f).setDuration(250L).withEndAction {
+                    hero.visibility = View.GONE
+                }.start()
+            }
             if (BuildConfig.GROQ_API_KEY.isEmpty()) {
                 messages.add(Message("assistant", "No Groq API key set. Add groqApiKey=... to local.properties and rebuild."))
                 adapter.notifyDataSetChanged()
