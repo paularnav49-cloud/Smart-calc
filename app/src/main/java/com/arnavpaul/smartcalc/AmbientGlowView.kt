@@ -16,37 +16,48 @@ import kotlin.math.PI
 import kotlin.math.sin
 
 /**
- * Ambient bottom glow for the AI chat screen.
+ * Ambient bottom light field for the AI chat screen.
  *
- * Two layers:
- *  1. Static atmospheric base - soft radial glows rising from the bottom
- *     corners and center, fading to transparent by mid-screen so the
- *     canvas stays white.
- *  2. Animated waves - four slow, overlapping sine layers drifting
- *     horizontally near the bottom. Each is a cheap filled Path with a
- *     vertical gradient alpha so edges dissolve instead of cutting off.
- *     No blur masks, no allocations in onDraw.
+ * Design goals:
+ *  - one continuous field of soft blue light, never visible layers;
+ *  - all moving shapes share the same hue, so overlaps merge;
+ *  - each wave's vertical gradient starts at alpha 0 exactly at its
+ *    highest possible crest, so the path boundary is invisible - the
+ *    fill simply materializes out of white. That removes the banded
+ *    "layered wave" look;
+ *  - three broad, slow sine fields drift and morph at different speeds,
+ *    reading as light breathing through fog, not ocean water.
+ *
+ * Cost: one ValueAnimator, three small path fills per frame, zero
+ * allocations in onDraw.
  */
 class AmbientGlowView(ctx: Context, attrs: AttributeSet? = null) : View(ctx, attrs) {
 
+    // One shared hue for everything - static base and waves - so the
+    // whole bottom reads as a single atmosphere.
+    private val blueR = 118
+    private val blueG = 160
+    private val blueB = 250
+    private val cyanR = 125
+    private val cyanG = 200
+    private val cyanB = 240
+
     private val cornerPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val centerPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val cyanPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val wavePaints = arrayOf(
-        Paint(Paint.ANTI_ALIAS_FLAG),
         Paint(Paint.ANTI_ALIAS_FLAG),
         Paint(Paint.ANTI_ALIAS_FLAG),
         Paint(Paint.ANTI_ALIAS_FLAG)
     )
     private val wavePath = Path()
 
-    // Per-layer character: wavelength (fraction of width), amplitude
-    // (fraction of height), vertical anchor (fraction of height),
-    // phase speed, and alpha. Layered variety keeps motion organic.
+    // Broad organic fields. amplitude is large relative to the gradient
+    // span so the visible body of each wave is wide and diffused.
     private val waves = arrayOf(
-        Wave(1.30f, 0.020f, 0.88f, 0.55f, 34, 0.980f),
-        Wave(0.95f, 0.028f, 0.93f, 0.85f, 44, 0.975f),
-        Wave(0.65f, 0.016f, 0.97f, 0.70f, 26, 0.988f),
-        Wave(0.48f, 0.032f, 1.00f, 0.42f, 52, 0.970f)
+        Wave(1.60f, 0.055f, 0.980f, 0.30f, 26),
+        Wave(1.05f, 0.070f, 1.040f, 0.48f, 20),
+        Wave(0.72f, 0.045f, 0.930f, 0.66f, 14)
     )
 
     private var phase = 0f
@@ -57,8 +68,7 @@ class AmbientGlowView(ctx: Context, attrs: AttributeSet? = null) : View(ctx, att
         val ampFrac: Float,
         val anchorFrac: Float,
         val speed: Float,
-        val alpha: Int,
-        val topFade: Float
+        val alpha: Int
     )
 
     override fun onAttachedToWindow() {
@@ -74,10 +84,8 @@ class AmbientGlowView(ctx: Context, attrs: AttributeSet? = null) : View(ctx, att
 
     private fun startWave() {
         if (animator != null) return
-        // One slow loop; phase advances continuously and each layer
-        // moves at its own rate. ~20s base cycle = calm, premium drift.
         val a = ValueAnimator.ofFloat(0f, (2f * PI).toFloat())
-        a.duration = 20000L
+        a.duration = 28000L
         a.repeatCount = ValueAnimator.INFINITE
         a.interpolator = LinearInterpolator()
         a.addUpdateListener { anim ->
@@ -94,31 +102,42 @@ class AmbientGlowView(ctx: Context, attrs: AttributeSet? = null) : View(ctx, att
         val fw = w.toFloat()
         val fh = h.toFloat()
 
-        // Richer soft blue radiating up from the bottom corners.
+        // Richer static base: one wide central pool plus two offset
+        // side fields (blue on the left, cyan on the right) so the
+        // atmosphere carries a subtle color variation.
         cornerPaint.shader = RadialGradient(
-            fw * 0.10f, fh * 1.05f, fw * 0.95f,
-            Color.argb(96, 120, 165, 250),
-            Color.argb(0, 120, 165, 250),
+            fw * 0.5f, fh * 1.12f, fw * 1.35f,
+            Color.argb(115, blueR, blueG, blueB),
+            Color.argb(0, blueR, blueG, blueB),
             Shader.TileMode.CLAMP
         )
-        // Central pool of light behind the input bar.
         centerPaint.shader = RadialGradient(
-            fw * 0.5f, fh * 1.08f, fw * 1.10f,
-            Color.argb(112, 100, 150, 248),
-            Color.argb(0, 100, 150, 248),
+            fw * 0.28f, fh * 1.04f, fw * 0.90f,
+            Color.argb(80, blueR, blueG, blueB),
+            Color.argb(0, blueR, blueG, blueB),
+            Shader.TileMode.CLAMP
+        )
+        cyanPaint.shader = RadialGradient(
+            fw * 0.76f, fh * 1.04f, fw * 0.90f,
+            Color.argb(66, cyanR, cyanG, cyanB),
+            Color.argb(0, cyanR, cyanG, cyanB),
             Shader.TileMode.CLAMP
         )
 
-        // Each wave fades vertically into the white canvas, so there is
-        // never a hard top edge - the fill dissolves upward.
+        // Wave gradients: alpha 0 begins exactly at the crest height
+        // (anchor - amplitude) and reaches full alpha below the trough.
+        // The path outline therefore sits where the fill is already
+        // transparent - no edge is ever rendered.
         for (i in wavePaints.indices) {
             val wv = waves[i]
             val anchor = fh * wv.anchorFrac
-            val top = fh * (wv.anchorFrac - 0.34f) * wv.topFade
+            val amp = fh * wv.ampFrac
+            val crest = anchor - amp
+            val full = anchor + amp * 1.6f
             wavePaints[i].shader = LinearGradient(
-                0f, top, 0f, anchor + fh * 0.10f,
-                Color.argb(0, 118, 160, 248),
-                Color.argb(wv.alpha, 118, 160, 248),
+                0f, crest, 0f, full,
+                Color.argb(0, blueR, blueG, blueB),
+                Color.argb(wv.alpha, blueR, blueG, blueB),
                 Shader.TileMode.CLAMP
             )
         }
@@ -129,17 +148,16 @@ class AmbientGlowView(ctx: Context, attrs: AttributeSet? = null) : View(ctx, att
         val w = width
         val h = height
         if (w <= 0 || h <= 0) return
-
-        // Static atmosphere, restricted to the lower region.
-        canvas.save()
-        canvas.clipRect(0, (h * 0.40f).toInt(), w, h)
-        canvas.drawRect(0f, 0f, w.toFloat(), h.toFloat(), cornerPaint)
-        canvas.drawRect(0f, 0f, w.toFloat(), h.toFloat(), centerPaint)
-        canvas.restore()
-
-        // Animated flowing waves.
         val fw = w.toFloat()
         val fh = h.toFloat()
+
+        canvas.save()
+        canvas.clipRect(0, (h * 0.34f).toInt(), w, h)
+        canvas.drawRect(0f, 0f, fw, fh, centerPaint)
+        canvas.drawRect(0f, 0f, fw, fh, cyanPaint)
+        canvas.drawRect(0f, 0f, fw, fh, cornerPaint)
+        canvas.restore()
+
         val twoPi = (2f * PI).toFloat()
         for (i in wavePaints.indices) {
             val wv = waves[i]
@@ -150,11 +168,13 @@ class AmbientGlowView(ctx: Context, attrs: AttributeSet? = null) : View(ctx, att
 
             wavePath.reset()
             wavePath.moveTo(0f, h.toFloat())
-            val steps = 36
+            val steps = 32
             for (s in 0..steps) {
                 val x = fw * s / steps
                 val k = (x + offset * wavelength) / wavelength * twoPi
-                val y = anchor + amplitude * sin(k) + amplitude * 0.45f * sin(k * 0.5f + offset)
+                // Two slowly beating sines give organic morphing rather
+                // than a rigid traveling wave.
+                val y = anchor + amplitude * (0.6f * sin(k) + 0.4f * sin(k * 0.37f + offset * 1.7f))
                 wavePath.lineTo(x, y)
             }
             wavePath.lineTo(fw, h.toFloat())

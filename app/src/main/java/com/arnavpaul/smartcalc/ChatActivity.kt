@@ -9,7 +9,6 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.View
-import android.view.animation.OvershootInterpolator
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -45,16 +44,16 @@ class ChatActivity : AppCompatActivity() {
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
 
-        // Hero text: soft fade-and-rise in when the screen opens.
+        // Hero text: gentle fade-in, resting slightly above center so
+        // it sits clear of the brightest part of the glow.
         val hero = findViewById<TextView>(R.id.chat_hero)
         hero.alpha = 0f
-        hero.translationY = 18f
+        val lift = 40 * resources.displayMetrics.density
+        hero.translationY = -lift
         hero.animate()
             .alpha(1f)
-            .translationY(0f)
-            .setDuration(700L)
-            .setStartDelay(150L)
-            .setInterpolator(OvershootInterpolator(1.1f))
+            .setDuration(800L)
+            .setStartDelay(200L)
             .start()
 
         input = findViewById<EditText>(R.id.chat_input)
