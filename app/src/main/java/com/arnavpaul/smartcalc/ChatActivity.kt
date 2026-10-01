@@ -26,6 +26,10 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var adapter: ChatAdapter
     private lateinit var input: EditText
 
+    // Guards against accidental duplicate submissions while a
+    // request to the API is already in flight.
+    private var sending = false
+
     private val speech = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val text = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()
         if (!text.isNullOrEmpty()) input.setText(text)
@@ -69,6 +73,9 @@ class ChatActivity : AppCompatActivity() {
         }
 
         send.setOnClickListener { v ->
+            // Ignore taps while a previous request is still running.
+            if (sending) return@setOnClickListener
+
             v.animate().scaleX(0.88f).scaleY(0.88f).setDuration(90).withEndAction {
                 v.animate().scaleX(1f).scaleY(1f).setDuration(150).start()
             }.start()
@@ -85,6 +92,10 @@ class ChatActivity : AppCompatActivity() {
                 adapter.notifyDataSetChanged()
                 return@setOnClickListener
             }
+
+            // Mark the request as in flight, show the user message
+            // immediately, and clear the input.
+            sending = true
             input.setText("")
             messages.add(Message("user", text))
             messages.add(Message("assistant", ""))
@@ -98,6 +109,7 @@ class ChatActivity : AppCompatActivity() {
                         messages[messages.size - 1] = Message("assistant", reply)
                         adapter.notifyDataSetChanged()
                         rv.scrollToPosition(messages.size - 1)
+                        sending = false
                     }
                 },
                 onError = { err ->
@@ -105,6 +117,7 @@ class ChatActivity : AppCompatActivity() {
                         messages[messages.size - 1] = Message("assistant", err)
                         adapter.notifyDataSetChanged()
                         rv.scrollToPosition(messages.size - 1)
+                        sending = false
                     }
                 })
         }
